@@ -18,7 +18,7 @@ public class Main {
         try {
             this.column = value;
         }catch (ArrayIndexOutOfBoundsException e) {
-            e.getMessage();
+            System.err.print("Wrong value of column");
         }
     }
     @Value("${airports.file}")
@@ -27,13 +27,30 @@ public class Main {
     }
 
     public static void main(String[] args) throws CsvValidationException, IOException {
-        SpringApplication.run(Main.class,args);
+        SpringApplication.run(Main.class, args);
 
         Scanner sc = new Scanner(System.in);
-        System.out.println("Введите строку: ");
+        boolean isTrue = true;
+        System.out.println("\nВведите строку: ");
         String key = sc.nextLine();
-        ReaderCSV rd = new ReaderCSV(fileName,column);
-        long wastedTime = rd.outputByValue(key);
-        System.out.printf("Время, затраченное на поиск и сортировку: " + (wastedTime / 1000000) + " мс") ;
+        if(key.equals("!quit") || key.equals("!Quit")) {
+            isTrue = false;
+        }else {
+            MyCSV rd = new MyCSV(fileName, column);
+            long wastedTime = rd.outputByValue(key);
+            System.out.printf("Время, затраченное на поиск и сортировку: " + (wastedTime / 1000000) + " мс");
+        }
+        while (isTrue) {
+            System.out.println("\nВведите строку:");
+            key = sc.nextLine();
+            if(key.equals("!quit")) {
+                isTrue = false;
+            }
+            if(isTrue) {
+                MyCSV rd = new MyCSV(fileName, column);
+                long wastedTime = rd.outputByValue(key);
+                System.out.printf("Время, затраченное на поиск и сортировку: " + (wastedTime / 1000000) + " мс");
+            }
+        }
     }
 }

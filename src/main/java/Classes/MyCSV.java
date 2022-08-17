@@ -24,7 +24,12 @@ public class MyCSV {
         if(beg.length() <= str.length()) {
             boolean t = true;
             for(int i = 0; i < beg.length(); i++) {
-                t = t && (beg.charAt(i) == str.charAt(i));
+                boolean ifIs = beg.charAt(i) == str.charAt(i);
+                if(beg.charAt(i) >= 97) {
+                    t = t && (ifIs || ((beg.charAt(i) - 32) == str.charAt(i)));
+                }else {
+                    t = t && (ifIs);
+                }
             }
             return t;
         } else {return false;}
@@ -33,20 +38,20 @@ public class MyCSV {
     public long outputByValue(String key) throws IOException, CsvValidationException {
         CSVReader csvReader = new CSVReader(new FileReader(fileName, StandardCharsets.UTF_8));
         String[] nextLine;
-        Comparator comparator = new ComparatorRows(column);
-        Set<Row> set = new TreeSet<Row>(comparator);
+        Comparator comparator = new MyComparator(column);
+        Set<MyFullString> set = new TreeSet<MyFullString>(comparator);
         long startTime = System.nanoTime();
         while ((nextLine = csvReader.readNext()) != null) {
             if(nextLine != null) {
                 if(begin(key,nextLine[column - 1])) {
-                    Row row = new Row(nextLine);
+                    MyFullString row = new MyFullString(nextLine);
                     set.add(row);
                 }
             }
         }
         long endTime = System.nanoTime();
 
-        Iterator<Row> iterator = set.iterator();
+        Iterator<MyFullString> iterator = set.iterator();
         while (iterator.hasNext()) {
             String[] row = iterator.next().get();
             System.out.println();
@@ -56,9 +61,7 @@ public class MyCSV {
                     System.out.print(row[i] + ", ");
                 }
             }
-            System.out.print(row[row.length - 1]);
-            System.out.print(">]");
-            System.out.println("");
+            System.out.print(row[row.length - 1] + ">]\n");
         }
         System.out.println("Количество строк: " + set.size() + ".");
         long resultTime = endTime - startTime;
